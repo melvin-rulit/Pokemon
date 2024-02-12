@@ -1,0 +1,663 @@
+<template>
+    <div>
+
+        <b-modal id="showUser" size="xl" title="Карточка сотрудника" centered hide-footer @hidden="closeModel" :modal-class="myclass" :header-text-variant="headerTextVariant">
+
+            <template slot="modal-header" slot-scope="{ close }">
+
+                <b> {{ user.surname}}
+                    {{ user.name }}
+                    {{ user.middle_name}}</b>
+                <span>Карточка сотрудника</span>
+
+            </template>
+
+            <b-tabs v-model="tabIndex">
+                <b-tab>
+                    <div class="mb-3">
+                        <div class="row no-gutters">
+                            <div class="col-md-4">
+                                <div class="py-2">
+                                    <input type="file" ref="avatar" @change="onFileChange" style="display: none;">
+                                    <div v-if="!user.avatar">
+
+                                        <b-img
+                                            @click="$refs.avatar.click()"
+                                            center
+                                            thumbnail
+                                            fluid
+                                            src="../images/no_avatar.jpg"
+                                            alt="?"
+                                            class="hoverim not-photo">
+                                        </b-img>
+
+                                    </div>
+
+                                    <div v-else>
+                                        <b-img
+                                            @click="$refs.avatar.click()"
+                                            center
+                                            thumbnail
+                                            fluid
+                                            class="photo"
+                                            :src="siteURL + user.avatar">
+                                        </b-img>
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="col-12">
+                                        <label
+                                            class="text-muted centr_notes text-uppercase"><b>О себе:</b></label>
+                                        <textarea
+                                            class="form-control"
+                                            textarea="true"
+                                            v-model="user.about_as"
+                                            name="about_as"
+                                            @blur="event => editField(event, 'other_relative_notes')"
+                                            :gate="can.user_edit"
+                                            rows="2">
+                                            </textarea>
+                                    </div>
+
+                                </div>
+
+                                <hr>
+
+                                <!--                                <b-button block squared class="mt-3">Информация</b-button>-->
+
+                                <b-button @click="career('career')" block squared variant="outline-info">Карьера
+                                </b-button>
+
+                                <b-button @click="history('history')" block squared variant="outline-info">История
+                                    действий
+                                </b-button>
+
+                                <b-button @click="kits" block squared variant="outline-info">ТВЦ</b-button>
+
+                                <b-button v-if="can.user_delete" block squared variant="danger" @click="deleteuser">
+                                    Удалить сотрудника
+                                </b-button>
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="card-body py-2">
+                                    <table class="table table-bordered">
+                                        <!--                                    <table class="table">-->
+                                        <tbody>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Фамилия</td>
+                                            <td>
+                                                <prosto_input-component
+                                                    v-model="user.surname"
+                                                    name="surname"
+                                                    :gate="can.user_edit"
+                                                    @edit-field="editField">
+                                                </prosto_input-component>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Имя</td>
+                                            <td>
+                                                <prosto_input-component
+                                                    v-model="user.name"
+                                                    name="name"
+                                                    :gate="can.user_edit"
+                                                    @edit-field="editField">
+                                                </prosto_input-component>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Отчество</td>
+                                            <td>
+                                                <prosto_input-component
+                                                    v-model="user.middle_name"
+                                                    name="middle_name"
+                                                    :gate="can.user_edit"
+                                                    @edit-field="editField">
+                                                </prosto_input-component>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">День рождения</td>
+                                            <td>
+                                                <prosto_input-component
+                                                    v-model="user.birthday"
+                                                    name="birthday"
+                                                    datePicker="true"
+                                                    :gate="can.user_edit"
+                                                    @edit-field="editField">
+                                                </prosto_input-component>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Телефон</td>
+                                            <td>
+                                                <prosto_input-component
+                                                    v-model="user.phone"
+                                                    mask="+## (###) ###-##-##"
+                                                    name="phone"
+                                                    :gate="can.user_edit"
+                                                    @edit-field="editField">
+                                                </prosto_input-component>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Email</td>
+                                            <td>
+                                                <prosto_input-component
+                                                    v-model="user.email"
+                                                    name="email"
+                                                    :gate="can.user_edit"
+                                                    @edit-field="editField">
+                                                </prosto_input-component>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Facebook</td>
+                                            <td>
+                                                <prosto_input-component
+                                                    v-model="user.facebook"
+                                                    name="facebook"
+                                                    :gate="can.user_edit"
+                                                    @edit-field="editField">
+                                                </prosto_input-component>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Instagram</td>
+                                            <td>
+                                                <prosto_input-component
+                                                    v-model="user.instagram"
+                                                    name="instagram"
+                                                    :gate="can.user_edit"
+                                                    @edit-field="editField">
+                                                </prosto_input-component>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Филиал</td>
+                                            <td>
+                                                <span v-if="!showEditBranch" v-for="item in user.branch"
+                                                      class="badge badge-info mr-2">
+                                                    {{ item.name }}
+                                                </span>
+                                                <multiselect
+                                                    v-if="showEditBranch"
+                                                    v-model="user.branch"
+                                                    label="name"
+                                                    track-by="id"
+                                                    :options="branches"
+                                                    :multiple="true"
+                                                    :taggable="true"
+                                                    deselectLabel="Удалить"
+                                                    selectedLabel="Выбран"
+                                                ></multiselect>
+                                                <hr class="navbar-divider my-3">
+                                                <div class="mt-3" v-if="can.user_branch">
+                                                    <button
+                                                        @click="editBranch"
+                                                        :disabled="showEditBranch"
+                                                        class="btn btn-sm btn-primary">Редактировать
+                                                    </button>
+                                                    <button
+                                                        @click="saveBranch"
+                                                        :disabled="!showEditBranch"
+                                                        class="btn btn-sm btn-success">Сохранить
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Должность</td>
+                                            <td>
+                                                <span v-if="!showEditRole" v-for="item in user.role"
+                                                      class="badge badge-info mr-2">
+                                                {{ item.title }}
+                                            </span>
+                                                <multiselect
+                                                    v-if="showEditRole"
+                                                    v-model="user.role"
+                                                    label="title"
+                                                    track-by="id"
+                                                    :options="roles"
+                                                    :multiple="true"
+                                                    :taggable="true"
+                                                    deselectLabel="Удалить"
+                                                    selectedLabel="Выбран"
+                                                ></multiselect>
+                                                <hr class="navbar-divider my-3">
+                                                <div class="mt-3" v-if="can.user_role">
+                                                    <button
+                                                        @click="editRole"
+                                                        :disabled="showEditRole"
+                                                        class="btn btn-sm btn-primary">Редактировать
+                                                    </button>
+                                                    <button
+                                                        @click="saveRole"
+                                                        :disabled="!showEditRole"
+                                                        class="btn btn-sm btn-success">Сохранить
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Последнее изменение</td>
+                                            <td>{{ user.updated_at }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted text-uppercase">Последний раз в сети</td>
+                                            <td>{{ user.last_online_at }}</td>
+                                        </tr>
+                                        <tr v-if="can.user_show_password">
+                                            <td class="text-muted text-uppercase">Пароль</td>
+                                            <td class="text-danger">{{ user.secret_id }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </b-tab>
+
+
+                <!--  Вывод истории действий  -->
+                <b-tab>
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <button @click="tabIndex = 0" class="btn btn-primary btn-sm">Назад</button>
+                        </div>
+                    </div>
+
+                    <b-table v-if="user_history"
+                             :sort-by.sync="sortBy"
+                             :sort-desc.sync="sortDesc"
+                             sticky-header="700px"
+                             hover
+                             :items="user_history"
+                             :fields="fields">
+                    </b-table>
+                </b-tab>
+
+                <b-tab>
+                    <div class="card-header">
+                        <div class="row align-items-center">
+                            <button @click="tabIndex = 0" class="btn btn-primary btn-sm">Назад</button>
+                        </div>
+                    </div>
+
+                    <p v-if="kits" v-for="kit in user_kits" :key="kit.id" class="mb-2">
+                        {{ kit.date }} - Выдано - {{ kit.article }} {{ kit.quantity }} шт. {{ kit.surname }} {{
+                            kit.name
+                        }} - {{ kit.comment }}
+                    </p>
+                </b-tab>
+
+            </b-tabs>
+        </b-modal>
+
+    </div>
+</template>
+
+<script>
+
+import Multiselect from 'vue-multiselect'
+import Loading from 'vue-loading-overlay';
+import Vue from "vue";
+import {mapActions} from "vuex";
+
+Vue.use(Loading, {
+    color: '#007BFF',
+    width: 35,
+    height: 35,
+});
+
+
+Vue.use(Multiselect);
+// import 'vue-multiselect/dist/vue-multiselect.min.css';
+
+
+export default {
+    components: {Multiselect},
+    data() {
+        return {
+            fullPage: false,
+            tabIndex: 0,
+            can: '',
+            arrays: ["1", "2", "3"],
+            showEditBranch: false,
+            showEditRole: false,
+            branches: [],
+            roles: [],
+            user: {},
+            infoModal: {
+                title: '',
+                content: ''
+            },
+
+            myclass: ['myclass'],
+            headerTextVariant: 'dark',
+
+            user_history: [],
+            user_kits: [],
+            roletest: '',
+
+            fields: [
+                {
+                    key: 'message',
+                    label: 'Действие',
+                },
+                {
+                    key: 'created_at',
+                    label: 'Дата',
+                },
+            ],
+            sortBy: 'id',
+            sortDesc: true,
+            datarole: '',
+            databranch: '',
+            confirmDelete: '',
+            siteURL: "http://127.0.0.1:8000/",
+
+        }
+    },
+
+    props: {
+        can: {}
+    },
+
+    computed: {
+        newBranchArray() {
+            this.databranch = this.user.branch
+            return this.user.branch.slice().map(item => item.id.toString());
+        },
+
+        newRoleArray() {
+            this.datarole = this.user.role
+            return this.user.role.slice().map(item => item.id.toString());
+        },
+
+        dataRole() {
+            return this.datarole.slice(-1);
+        },
+
+        dataBranch() {
+            return this.databranch.slice(-1);
+        },
+
+    },
+
+    methods: {
+
+        ...mapActions(['loadAvatar']),
+
+        getAllBranches() {
+            axios.get('api/v2/getAllBranches')
+                .then(response => this.branches = response.data)
+        },
+
+        getAllRoles() {
+            axios.get('api/v2/getAllRoles')
+                .then(response => this.roles = response.data)
+        },
+
+        // Костыль события, если призодит type (datePicker), то выполняем блок именно для него
+        editField(e, name, type) {
+            if (type) {
+                axios.put('api/v2/users/' + this.user.id, {field_name: name, field_value: e})
+            } else {
+                const value = e.target.value;
+                const key = e.currentTarget.getAttribute('name');
+                axios.put('api/v2/users/' + this.user.id, {field_name: key, field_value: value})
+            }
+            this.loadAvatar()
+        },
+
+        editBranch() {
+            this.showEditBranch = !this.showEditBranch
+            this.getAllBranches()
+        },
+
+        saveBranch() {
+            this.showEditBranch = !this.showEditBranch
+            axios.post('api/v2/saveBranches', {user_id: this.user.id, branches: this.newBranchArray, lastBranch: this.dataBranch})
+        },
+
+        editRole() {
+            this.showEditRole = !this.showEditRole
+            this.getAllRoles()
+        },
+
+        saveRole() {
+            this.showEditRole = !this.showEditRole
+            axios.post('api/v2/saveRoles', {user_id: this.user.id, roles: this.newRoleArray, lastRole: this.dataRole})
+        },
+
+        onFileChange(e) {
+
+            var files = e.target.files || e.dataTransfer.files;
+            if (!files.length)
+                return;
+
+            this.createImage(files[0]);
+
+        },
+
+        createImage(file) {
+            var image = new Image();
+            var reader = new FileReader();
+            // var vm = this;
+            reader.onload = (e) => {
+                this.image = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            this.upload(event);
+        },
+
+        upload(event) {
+
+            let data = new FormData();
+            let file = event.target.files[0];
+            data.append('file', file)
+            data.append('id', this.user.id)
+            let config = {
+                header: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+            axios.post('api/v2/imageUser', data, config)
+
+            setTimeout(() => {
+                axios.get('api/v2/users/' + this.user.id)
+                    .then(response => {
+                        this.user = response.data.data
+                    })
+            }, 300)
+
+
+            // this.loadAvatar()
+        },
+
+
+        //---------------------  Показ истории при нажитии "Карьера" -------------------------//
+
+        async career(history_type) {
+
+            try {
+                let loader = this.$loading.show({
+                    container: this.fullPage ? null : this.$refs.formContainer,
+                    canCancel: true,
+                });
+
+                let res = await axios.post('api/v2/history', {user_id: this.user.id, history_type: history_type})
+
+                if (res.status == 200) {
+                    this.user_history = res.data.data
+                    this.tabIndex = 1
+                    loader.hide()
+                }
+                return res.data.data
+            } catch (err) {
+                console.error(err);
+            }
+
+        },
+
+        //------------  Показ истории при нажитии "История действий" -----------------//
+
+        async history(history_type) {
+            try {
+                let loader = this.$loading.show({
+                    container: this.fullPage ? null : this.$refs.formContainer,
+                    canCancel: true,
+                });
+
+                let res = await axios.post('api/v2/history', {
+                    user_id: this.user.id,
+                    history_type: history_type
+                })
+
+                if (res.status == 200) {
+                    this.user_history = res.data.data
+                    this.tabIndex = 1
+                    loader.hide()
+                }
+                return res.data.data
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
+        async kits() {
+            try {
+                let loader = this.$loading.show({
+                    container: this.fullPage ? null : this.$refs.formContainer,
+                    canCancel: true,
+                });
+
+                let res = await axios.post('api/v2/getUserKit', {user_id: this.user.id})
+
+                if (res.status == 200) {
+                    this.user_kits = res.data.data
+                    this.tabIndex = 2
+                    loader.hide()
+                }
+                return res.data.data
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
+        //-------------------------- Удаление сотрудника -------------------------------------//
+        deleteuser() {
+
+            this.$bvModal.msgBoxConfirm('Вы уверены что хотите удалить сотрудника ( ' + this.user.surname + ' ' + this.user.name + ' ) ?', {
+                size: 'lg',
+                buttonSize: 'md',
+                okVariant: 'danger',
+                okTitle: 'Да',
+                cancelTitle: 'Нет',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+                .then(value => {
+                    this.confirmDelete = value
+
+                    if (this.confirmDelete === true) {
+
+                        axios.delete('api/v2/users/' + this.user.id);
+
+                        this.$bvModal.hide('showUser')
+
+                        let loader = this.$loading.show({
+                            color: '#0080ff',
+                        });
+
+                        this.$emit('get-method', { delete_user: true, surname:this.user.surname, name:this.user.name })
+
+                        setTimeout(() => {
+
+                            loader.hide()
+
+                        }, 1000)
+                    }
+                })
+
+        },
+
+        showModa_1(id) {
+            this.$bvModal.show('showUser')
+        },
+
+        addNewUserModal(id) {
+            axios.get('api/v2/users/' + id)
+                .then(response => {
+                    this.user = response.data.data
+                })
+
+            setTimeout(() => {
+
+                this.$bvModal.show('showUser')
+
+            }, 300)
+        },
+
+        closeModel() {
+            this.user_history = []
+            this.showEditBranch = false,
+                this.showEditRole = false
+            this.$emit('get-method')
+            this.tabIndex = 0
+            this.user.avatar = ''
+        }
+    },
+}
+</script>
+
+<style scoped>
+
+.table td, .table th {
+    padding: 10px;
+}
+
+.hoverim:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.not-photo {
+    display: flex;
+    width: 250px;
+    height: 250px;
+    border-radius: 0px;
+    font: 100px / 250px Helvetica, Arial, sans-serif;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    user-select: none;
+    background-color: rgb(255, 193, 7);
+    color: rgb(255, 255, 255);
+}
+
+.photo {
+    display: flex;
+    width: 300px;
+    height: 300px;
+    border-radius: 0px;
+}
+
+.centr_notes {
+    margin-left: 43%;
+}
+
+.multiselect__tags {
+    font-size: 2px;
+}
+
+
+</style>
