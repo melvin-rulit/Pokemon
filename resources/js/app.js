@@ -4,33 +4,33 @@ import {createApp} from 'vue'
 import {createRouter, createWebHashHistory} from 'vue-router'
 
 import App from './components/App.vue'
-import UsersList from "./components/users/UsersList.vue";
-import UserCreateForm from "./components/users/UserCreateForm.vue";
-import UserEditForm from "./components/users/UserEditForm.vue";
+import PokemonList from "./components/pokemon/PokemonList.vue";
+// import UserCreateForm from "./components/pokemon/UserCreateForm.vue";
+// import UserEditForm from "./components/pokemon/UserEditForm.vue";
 
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
             path: '/',
-            component: UsersList
+            component: PokemonList
         },
 
-        {
-            name: 'listUsers',
-            path: '/perfomance',
-            component: UsersList
-        },
-        {
-            name: 'createUser',
-            path: '/users/create',
-            component: UserCreateForm
-        },
-        {
-            name: 'editUser',
-            path: '/users/:id',
-            component: UserEditForm
-        },
+        // {
+        //     name: 'listPokemon',
+        //     path: '/perfomance',
+        //     component: PokemonList
+        // },
+        // {
+        //     name: 'createUser',
+        //     path: '/pokemon/create',
+        //     component: UserCreateForm
+        // },
+        // {
+        //     name: 'editUser',
+        //     path: '/pokemon/:id',
+        //     component: UserEditForm
+        // },
 
     ],
 })

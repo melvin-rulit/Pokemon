@@ -36,4 +36,5 @@ Route::group(['prefix' => 'v1'], function () {
         Route::delete('/deleteAppearance/{appearance}', App\Http\Controllers\Api\V1\Appearance\DeleteController::class);
     });
 
+    Route::get('/getImage/{image_name}', App\Http\Controllers\Api\V1\ImageController::class);
 });

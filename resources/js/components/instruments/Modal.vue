@@ -2,95 +2,68 @@
     <div class="modal-shadow">
         <div class="modal_block">
 
-            <form @submit="update">
 
-                <span class="modal-title pt-2 text-lg">Редактирование показателя</span>
+            <span class="modal-title pt-2 text-lg">About pokemon</span>
 
-                <div class="modal-content mt-4">
-                    <TextInput title="Название" v-model:value="perfomance.title" type="text"/>
-                </div>
-                <div class="modal-content mt-4">
-                    <TextInput title="Код" v-model:value="perfomance.code" type="text"/>
-                </div>
-                <div class="modal-content mt-4">
-                    <TextInput title="Размерность" v-model:value="perfomance.unit_of_measure" type="text"/>
-                </div>
-                <div class="modal-content mt-4">
-                    <TextInput title="Период от" v-model:value="perfomance.period_start" type="text"/>
-                </div>
-                <div class="modal-content mt-4">
-                    <TextInput title="Период до" v-model:value="perfomance.period_end" type="text"/>
-                </div>
-                <div class="modal-content mt-4">
-                    <TextInput title="Фактическое значение" v-model:value="perfomance.actual_indicator" type="text"/>
-                </div>
-                <div class="modal-content mt-4">
-                    <TextInput title="Сумма двух других показателей" v-model:value="perfomance.amount_indicator" type="text"/>
-                </div>
+            <div class="modal-content mt-4">
+                <!--                    <TextInput title="Название" v-model:value="pokemonName.na" type="text"/>-->
+            </div>
+            <!--                <div class="modal-content mt-4">-->
+            <!--                    <TextInput title="Код" v-model:value="pokemonName.code" type="text"/>-->
+            <!--                </div>-->
+            <!--                <div class="modal-content mt-4">-->
+            <!--                    <TextInput title="Размерность" v-model:value="pokemonName.unit_of_measure" type="text"/>-->
+            <!--                </div>-->
+            <!--                <div class="modal-content mt-4">-->
+            <!--                    <TextInput title="Период от" v-model:value="pokemonName.period_start" type="text"/>-->
+            <!--                </div>-->
+            <!--                <div class="modal-content mt-4">-->
+            <!--                    <TextInput title="Период до" v-model:value="pokemonName.period_end" type="text"/>-->
+            <!--                </div>-->
+            <!--                <div class="modal-content mt-4">-->
+            <!--                    <TextInput title="Фактическое значение" v-model:value="pokemonName.actual_indicator" type="text"/>-->
+            <!--                </div>-->
+            <!--                <div class="modal-content mt-4">-->
+            <!--                    <TextInput title="Сумма двух других показателей" v-model:value="perfomance.amount_indicator" type="text"/>-->
+            <!--                </div>-->
 
-                <div class="modal-footer pt-4">
-                    <button type="submit" @click="closeModal"
-                            class="rounded-md bg-red-500 px-3 py-2 mr-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                        Отмена
-                    </button>
+            <div class="modal-footer pt-4">
+                <button type="submit" @click="closeModal"
+                        class="rounded-md bg-indigo-500 px-3 py-2 mr-1 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    close
+                </button>
 
-                    <button type="submit"
-                            class="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                        Сохранить
-                    </button>
+            </div>
 
-                </div>
-
-            </form>
 
         </div>
     </div>
 </template>
 
 <script>
-import {PerfomanceService} from "../../services/PerfomanceService";
+import {PokemonService} from "../../services/PokemonService";
 import TextInput from "../instruments/TextInput.vue";
 
 export default {
     name: "Modal",
     components: {TextInput},
     props: {
-        selectedPerfomanceId: ''
+        pokemonId: Number
     },
 
     data: function () {
         return {
-            perfomance: {
-                'title': '',
-                'code': '',
-                'unit_of_measure': '',
-                'period_start': '',
-                'period_end': '',
-                'actual_indicator': '',
-                'amount_indicator': '',
-            },
-            message: ''
+            pokemon: [],
         }
     },
     created() {
-        PerfomanceService.getPerfomanceById(this.selectedPerfomanceId)
-            .then(response => this.perfomance = response.data.perfomance)
+        console.log('pokemonId:', this.pokemonId);
+        PokemonService.getPokemonByName(this.pokemonId)
+            .then(response => this.pokemon = response)
     },
     methods: {
         closeModal() {
             this.$emit('close');
-        },
-        update: async function (event) {
-            event.preventDefault()
-            this.errors = null
-            PerfomanceService.update(this.perfomance)
-                .then(response => {
-                    this.perfomance = response.data.perfomance
-                    this.message = 'Изменения сохранены'
-                })
-                .catch(error => {
-                    this.errors = error.response.data.message
-                })
         },
     },
 }

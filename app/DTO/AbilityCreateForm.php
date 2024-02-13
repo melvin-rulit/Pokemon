@@ -9,10 +9,9 @@ class AbilityCreateForm
 {
     public string $name_en;
     public string $name_ru;
-    public ?string $image = null;
+    public string $image;
+    public function __construct(string $name_en, string $name_ru, UploadedFile $image)
 
-
-    public function __construct(string $name_en, string $name_ru, ?UploadedFile $image=null)
     {
         $this->name_en = $name_en;
         $this->name_ru = $name_ru;
@@ -24,7 +23,8 @@ class AbilityCreateForm
         return new static(
             $request->get('name_en'),
             $request->get('name_ru'),
-            $request->file('image')? base64_encode(file_get_contents($request->file('image'))) : null,
+            $request->file('file')
+
         );
     }
     public function toArray(): array
@@ -44,5 +44,6 @@ class AbilityCreateForm
             $data['image'] ?? null
         );
     }
+
 
 }

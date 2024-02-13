@@ -8,7 +8,7 @@ use App\Repositories\Interfaces\AbilitieRepositoryInterface;
 class AbilitieRepository implements AbilitieRepositoryInterface
 {
 
-    public function all()
+    public function all(): \Illuminate\Database\Eloquent\Collection
     {
         return Ability::all();
     }

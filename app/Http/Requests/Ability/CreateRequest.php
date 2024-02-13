@@ -25,8 +25,7 @@ class CreateRequest extends FormRequest
         return [
             'name_en' => 'required',
             'name_ru' => 'required',
-            'image' => '',
-//            'image' => ['sometimes', 'image:jpg,jpeg,png'],
+            'file' => ['required', 'image:jpg,jpeg,png'],
 
         ];
     }
@@ -36,8 +35,8 @@ class CreateRequest extends FormRequest
         return [
             'name_en.required' => 'Название способности должно быть заполнено',
             'name_ru.required' => 'Название способности должно быть заполнено',
-//            'image.required' => 'Картинка способности должна быть загружена',
-//            'image.image' => 'Картинка не jpg,jpeg,png формата',
+            'image.required' => 'Картинка способности должна быть загружена',
+            'image.image' => 'Картинка не jpg,jpeg,png формата',
         ];
     }
 
